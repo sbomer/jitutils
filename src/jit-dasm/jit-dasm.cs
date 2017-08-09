@@ -151,7 +151,7 @@ namespace ManagedCodeGen
     public class AssemblyInfo
     {
         public string Name { get; set; }
-        // Contains path to assembly.
+        // Contains full path to assembly.
         public string Path { get; set; }
         // Contains relative path within output directory for given assembly.
         // This allows for different output directories per tool.

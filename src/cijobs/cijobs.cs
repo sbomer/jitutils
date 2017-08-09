@@ -285,7 +285,7 @@ namespace ManagedCodeGen
         private struct JobBuilds
         {
             public List<Build> builds;
-            public Build lastSuccessfulBuild;
+            public Build? lastSuccessfulBuild;
         }
 
         #pragma warning restore 0649
@@ -413,10 +413,18 @@ namespace ManagedCodeGen
 
                     if (lastSuccessfulBuild)
                     {
-                        var lastSuccessfulNumber = jobBuilds.lastSuccessfulBuild.number;
-                        jobBuilds.lastSuccessfulBuild.info 
-                            = await GetJobBuildInfo(productName, branchName, jobName, lastSuccessfulNumber);
-                        return Enumerable.Repeat(jobBuilds.lastSuccessfulBuild, 1);
+                        if (jobBuilds.lastSuccessfulBuild.HasValue)
+                        {
+                            var lastSuccessfulBuildValue = jobBuilds.lastSuccessfulBuild.Value;
+                            var lastSuccessfulNumber = lastSuccessfulBuildValue.number;
+                            lastSuccessfulBuildValue.info = await GetJobBuildInfo(productName, branchName, jobName, lastSuccessfulNumber);
+                            jobBuilds.lastSuccessfulBuild = lastSuccessfulBuildValue;
+                            return Enumerable.Repeat(jobBuilds.lastSuccessfulBuild.Value, 1);
+                        }
+                        else
+                        {
+                            return Enumerable.Empty<Build>();
+                        }
                     }
                     else if (number != 0)
                     {
